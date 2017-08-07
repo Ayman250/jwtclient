@@ -3,26 +3,29 @@ import logo from './logo.svg';
 import './App.css';
 
 class Login extends Component {
-    createCookie(name,value,days) {
-        let expires = "";
-        if (days) {
-            let date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + value + expires + "; path=/";
+    setCookie(cname, cvalue, exdays) {
+        let d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
-    readCookie(name) {
-        let nameEQ = name + "=";
-        let ca = document.cookie.split(';');
-        for(let i=0;i < ca.length;i++) {
+    getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
             let c = ca[i];
-            while (c.charAt(0)===' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
         }
-        return null;
-     }
+        return "";
+    }
+
 
     onSubmit(event) {
         event.preventDefault();
@@ -37,7 +40,7 @@ class Login extends Component {
         xhttp.onreadystatechange = () => {
             if (xhttp.readyState === xhttp.DONE) {
                 console.log(xhttp.status);
-                console.log(xhttp.responseText);
+                this.setCookie("jwt", xhttp.responseText, .1);
                 console.log('');
                 if (xhttp.status === 400) {
                     console.log("Invalid username and password");
@@ -46,6 +49,7 @@ class Login extends Component {
                 }
             }
         }
+
     }
 
     render() {
@@ -69,7 +73,7 @@ class App extends Component {
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo"/>
-                    <h2>Welcome to React</h2>
+                    <h2>MY C()()L SITE</h2>
                 </div>
                 <Login/>
             </div>
