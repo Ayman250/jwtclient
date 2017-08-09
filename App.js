@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom'
+import {BrowserRouter as Router, Route} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
 import Login from './Login.js'
+import Welcome from './Welcome.js'
 
 
 
@@ -48,18 +48,23 @@ class App extends Component {
     }
 
     render() {
+        let RouterLogin = () => (<Login setCookie={this.setCookie.bind(this)}/>);
         return (
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo"/>
                     <h2>MY C()()L SITE</h2>
                 </div>
-                <Router>
-                    <Route path="/" component={Login}/>
-                </Router>
-                {/*<Login setCookie={this.setCookie.bind(this)} getCookie={this.getCookie.bind(this)}/>*/}
+                    <Router>
+                        <switch>
+                            <Route exact={true} path="/" component={Welcome}/>
+                            <Route path="/login" component={RouterLogin}/>
+                            <Route path="/test" render={() =>
+                                (<button type="button" onClick={this.test.bind(this)}>Test!</button>)}/>
+                        </switch>
+                    </Router>
                 <br/>
-                <button type="button" onClick={this.test.bind(this)}>Test!</button>
+
             </div>
         );
     }
