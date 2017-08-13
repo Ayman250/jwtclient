@@ -1,14 +1,40 @@
 import React, {Component} from 'react';
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
 import Login from './Login.js'
 import Welcome from './Welcome.js'
+import Spinner from 'react-spinner';
 
 
 
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: undefined
+        };
+    }
+
+    componentDidMount(){
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "http://localhost:3030/userstatus", true);
+        console.log("Bearer " + this.getCookie("jwt"));
+        xhttp.setRequestHeader("Authorization", "Bearer " + this.getCookie("jwt"));
+        xhttp.send();
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === xhttp.DONE) {
+                if (xhttp.status === 200) {
+                    this.setState({isLoggedIn: true})
+                }
+                else{
+                    this.setState({isLoggedIn: false})
+                }
+            }
+        }
+    }
 
     setCookie(cname, cvalue, exdays) {
         let d = new Date();
@@ -34,6 +60,7 @@ class App extends Component {
         return "";
     }
 
+
     test(){
         let xhttp = new XMLHttpRequest();
         xhttp.open("GET", "http://localhost:3030/tester", true);
@@ -47,20 +74,33 @@ class App extends Component {
         }
     }
 
+    auth(component){
+        if(this.state.isLoggedIn === undefined){
+            return (<Spinner/>);
+        } else if(this.state.isLoggedIn){
+            return component;
+        }
+        else{
+            return (<Redirect to={'/login'}/>);
+        }
+    }
+
     render() {
-        let RouterLogin = () => (<Login setCookie={this.setCookie.bind(this)}/>);
+        let RouterLogin =  (<Login setCookie={this.setCookie.bind(this)} isLoggedIn={this.state.isLoggedIn}/>);
+        let RouterWelcome =  (<Welcome {...this.state}/> );
         return (
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo"/>
-                    <h2>MY C()()L SITE</h2>
+                    <h2>Beta</h2>
                 </div>
                     <Router>
                         <switch>
-                            <Route exact={true} path="/" component={Welcome}/>
-                            <Route path="/login" component={RouterLogin}/>
-                            <Route path="/test" render={() =>
-                                (<button type="button" onClick={this.test.bind(this)}>Test!</button>)}/>
+                            <Route exact={true} path="/" render={() => this.auth(RouterWelcome)}/>
+                            <Route path="/login" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterLogin)}/>
+                            <Route path="/test" render={() => this.state.isLoggedIn === true ?
+                                this.auth(<button type="button" onClick={this.test.bind(this)}>Test!</button>) :
+                                <Redirect to={'/login'}/>}/>
                         </switch>
                     </Router>
                 <br/>
