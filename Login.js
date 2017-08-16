@@ -9,31 +9,15 @@ class Login extends Component {
        this.state = {shouldRedirect:this.props.isLoggedIn}
     }
 
-    onSubmit(event) {
+    onSubmit(event){
         event.preventDefault();
         let loginInfo = {
             username: this.refs.username.value,
             password: this.refs.password.value
         };
-        console.log(loginInfo);
-        let xhttp = new XMLHttpRequest();
-        xhttp.open("POST", "http://localhost:3030/login", true);
-        xhttp.send(JSON.stringify(loginInfo));
-        xhttp.onreadystatechange = () => {
-            if (xhttp.readyState === xhttp.DONE) {
-                console.log(xhttp.status);
-                console.log('');
-                if (xhttp.status === 400) {
-                    console.log("Invalid username and password");
-                } else if (xhttp.status === 200) {
-                    this.props.setCookie("jwt", xhttp.responseText, .1);
-                    this.setState({shouldRedirect: true});
-                    window.location = "http://localhost:3000/"
-                }
-
-            }
-        }
+        this.props.onLoginSubmit(loginInfo);
     }
+
 
     render() {
         return (
@@ -45,7 +29,7 @@ class Login extends Component {
                     <label><b>Password</b></label>
                     <input type="password" ref="password" placeholder="Enter Password" name="password"/>
                     <br/>
-                    {this.state.shouldRedirect ?
+                    {this.props.isLoggedIn ?
                         (<Redirect to={'/'}/>) : (<input type="submit" value="Login"/>)}
                 </form>
             </div>

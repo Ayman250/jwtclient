@@ -11,6 +11,27 @@ import Spinner from 'react-spinner';
 
 class App extends Component {
 
+    onLoginSubmit(loginInfo) {
+        console.log(loginInfo);
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3030/login", true);
+        xhttp.send(JSON.stringify(loginInfo));
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === xhttp.DONE) {
+                console.log(xhttp.status);
+                console.log('');
+                if (xhttp.status === 400) {
+                    console.log("Invalid username and password");
+                } else if (xhttp.status === 200) {
+                    this.setCookie("jwt", xhttp.responseText, .1);
+                    this.setState({isLoggedIn: true});
+                    this.render();
+                }
+
+            }
+        }
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -86,7 +107,7 @@ class App extends Component {
     }
 
     render() {
-        let RouterLogin =  (<Login setCookie={this.setCookie.bind(this)} isLoggedIn={this.state.isLoggedIn}/>);
+        let RouterLogin =  (<Login setCookie={this.setCookie.bind(this)} isLoggedIn={this.state.isLoggedIn} onLoginSubmit={this.onLoginSubmit.bind(this)}/>);
         let RouterWelcome =  (<Welcome {...this.state}/> );
         return (
             <div className="App">
