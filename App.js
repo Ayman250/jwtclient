@@ -2,14 +2,36 @@ import React, {Component} from 'react';
 import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
-import Login from './Login.js'
-import Welcome from './Welcome.js'
+import Login from './Login.js';
+import Welcome from './Welcome.js';
 import Spinner from 'react-spinner';
+import Register from "./Register";
 
 
 
 
 class App extends Component {
+
+    onRegisterSubmit(loginInfo) {
+        console.log(loginInfo);
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "http://localhost:3030/register", true);
+        xhttp.send(JSON.stringify(loginInfo));
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === xhttp.DONE) {
+                console.log(xhttp.status);
+                console.log('');
+                if (xhttp.status === 400) {
+                    console.log("Invalid username and password");
+                } else if (xhttp.status === 200) {
+                    this.setCookie("jwt", xhttp.responseText, .1);
+                    this.setState({isLoggedIn: true});
+                    this.render();
+                }
+
+            }
+        }
+    }
 
     onLoginSubmit(loginInfo) {
         console.log(loginInfo);
@@ -107,7 +129,8 @@ class App extends Component {
     }
 
     render() {
-        let RouterLogin =  (<Login setCookie={this.setCookie.bind(this)} isLoggedIn={this.state.isLoggedIn} onLoginSubmit={this.onLoginSubmit.bind(this)}/>);
+        let RouterLogin =  (<Login isLoggedIn={this.state.isLoggedIn} onLoginSubmit={this.onLoginSubmit.bind(this)}/>);
+        let RouterRegister = (<Register onRegisterSubmit={this.onRegisterSubmit.bind(this)}/>);
         let RouterWelcome =  (<Welcome {...this.state}/> );
         return (
             <div className="App">
@@ -117,11 +140,11 @@ class App extends Component {
                 </div>
                     <Router>
                         <switch>
-                            <Route exact={true} path="/" render={() => this.auth(RouterWelcome)}/>
                             <Route path="/login" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterLogin)}/>
-                            <Route path="/test" render={() => this.state.isLoggedIn === true ?
-                                this.auth(<button type="button" onClick={this.test.bind(this)}>Test!</button>) :
-                                <Redirect to={'/login'}/>}/>
+                            <Route path="/Register" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterRegister)}/>
+                            <Route exact={true} path="/" render={() => this.auth(RouterWelcome)}/>
+                            <Route path="/test" render={() => this.auth(<button type="button" onClick={this.test.bind(this)}>Test!</button>)}/>
+                            <Route path="/chat" render={() => this.auth()}/>
                         </switch>
                     </Router>
                 <br/>
