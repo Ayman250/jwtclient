@@ -2,15 +2,25 @@ import React, {Component} from 'react';
 import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
-import Login from './Login.js';
+import Login from './login/Login.js';
 import Welcome from './Welcome.js';
 import Spinner from 'react-spinner';
-import Register from "./Register";
+import Register from "./login/Register";
+import PostSection from "./posts/PostSection"
 
 
 
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: undefined,
+            posts: [],
+            activeHash: undefined
+        };
+    }
 
     onRegisterSubmit(loginInfo) {
         console.log(loginInfo);
@@ -45,20 +55,13 @@ class App extends Component {
                 if (xhttp.status === 400) {
                     console.log("Invalid username and password");
                 } else if (xhttp.status === 200) {
-                    this.setCookie("jwt", xhttp.responseText, .1);
+                    this.setCookie("jwt", xhttp.responseText, 1);
                     this.setState({isLoggedIn: true});
                     this.render();
                 }
 
             }
         }
-    }
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoggedIn: undefined
-        };
     }
 
     componentDidMount(){
@@ -103,6 +106,28 @@ class App extends Component {
         return "";
     }
 
+    addPost(messageBody){
+        console.log(messageBody);
+        let {activeHash} = this.state;
+        let xhttp = new XMLHttpRequest();
+        let message = {body: messageBody, author: "TEST AUTHOR"};
+        xhttp.open("POST", "http://localhost:3030/addpost", true);
+        xhttp.setRequestHeader("Authorization", "Bearer " + this.getCookie("jwt"));
+        xhttp.send(JSON.stringify(message));
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === xhttp.DONE) {
+                console.log(xhttp.status);
+                console.log('');
+                //pre-emptively Add Message for sake of flow...
+               if (xhttp.status === 200) {
+                }
+                else if (xhttp.status === 400) {
+                    console.log("Error Posting Message");
+                }
+            }
+        }
+
+    }
 
     test(){
         let xhttp = new XMLHttpRequest();
@@ -144,7 +169,7 @@ class App extends Component {
                             <Route path="/Register" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterRegister)}/>
                             <Route exact={true} path="/" render={() => this.auth(RouterWelcome)}/>
                             <Route path="/test" render={() => this.auth(<button type="button" onClick={this.test.bind(this)}>Test!</button>)}/>
-                            <Route path="/chat" render={() => this.auth()}/>
+                            <Route path="/chat" render={() => this.auth(<PostSection {...this.state} addPost={this.addPost.bind(this)}/>)}/>
                         </switch>
                     </Router>
                 <br/>

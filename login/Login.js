@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './Login.js'
 import {Redirect} from 'react-router-dom';
+import {Link} from 'react-router-dom'
 
 class Login extends Component {
 
@@ -23,15 +24,17 @@ class Login extends Component {
         return (
             <div>
                 <form onSubmit={this.onSubmit.bind(this)} method="post">
-                    <label><b>Username</b></label>
+                    <label><b>Username  </b></label>
                     <input type="text" ref="username" placeholder="Enter Username" name="username"/>
                     <br/>
-                    <label><b>Password</b></label>
+                    <label><b>Password  </b></label>
                     <input type="password" ref="password" placeholder="Enter Password" name="password"/>
                     <br/>
                     {this.props.isLoggedIn ?
                         (<Redirect to={'/'}/>) : (<input type="submit" value="Login"/>)}
                 </form>
+                <br/>
+                <p>Don't have an account?  <Link to={"/register"}>Click Here To Register!</Link> </p>
             </div>
         );
     }

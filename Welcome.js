@@ -10,6 +10,8 @@ class Welcome extends Component{
                         WELCOME!
                     </h2>
                     <Link to={"/test"}>Test Page</Link>
+                    <br/>
+                    <Link to={"/chat"}>Chat</Link>
                 </div>
             );
         }
