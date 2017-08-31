@@ -5,7 +5,7 @@ class PostForm extends Component{
         e.preventDefault();
         const node = this.refs.post;
         const post = node.value;
-        this.props.addPost(post);
+        this.props.addPost(post, this.props.activeHash);
         node.value='';
     }
     render(){

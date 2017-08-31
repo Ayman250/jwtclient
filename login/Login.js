@@ -6,8 +6,8 @@ import {Link} from 'react-router-dom'
 class Login extends Component {
 
     constructor(props){
-       super(props);
-       this.state = {shouldRedirect:this.props.isLoggedIn}
+        super(props);
+        this.state = {shouldRedirect:this.props.isLoggedIn}
     }
 
     onSubmit(event){
@@ -19,22 +19,46 @@ class Login extends Component {
         this.props.onLoginSubmit(loginInfo);
     }
 
-
     render() {
         return (
-            <div>
-                <form onSubmit={this.onSubmit.bind(this)} method="post">
-                    <label><b>Username  </b></label>
-                    <input type="text" ref="username" placeholder="Enter Username" name="username"/>
-                    <br/>
-                    <label><b>Password  </b></label>
-                    <input type="password" ref="password" placeholder="Enter Password" name="password"/>
-                    <br/>
-                    {this.props.isLoggedIn ?
-                        (<Redirect to={'/'}/>) : (<input type="submit" value="Login"/>)}
-                </form>
-                <br/>
-                <p>Don't have an account?  <Link to={"/register"}>Click Here To Register!</Link> </p>
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-4 col-md-offset-4 text-center">
+                        <div className="search-box">
+                            <div className="caption">
+                            </div>
+                            <form onSubmit={this.onSubmit.bind(this)} method="post" className="loginForm">
+                                <div className="input-group">
+                                    <input type="text" id="name" ref="username" className="form-control" placeholder="Full Name"/>
+                                    <input type="password" id="paw" ref="password" className="form-control" placeholder="Password"/>
+                                    {this.props.isLoggedIn ?
+                                        (<Redirect to={'/'}/>) : (<input type="submit" id="submit" className="form-control" value="Login"/>)}
+
+                                </div>
+                                <div className="form-group">
+                                    <br/>
+                                    <button className="btn">
+                                        <Link to={"/register"}> Click Here To Sign Up</Link>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div className="col-md-4">
+                        <div className="aro-pswd_info">
+                            <div id="pswd_info">
+                                <h4>Password must be requirements</h4>
+                                <ul>
+                                    <li id="letter" className="invalid">At least <strong>one letter</strong></li>
+                                    <li id="capital" className="invalid">At least <strong>one capital letter</strong></li>
+                                    <li id="number" className="invalid">At least <strong>one number</strong></li>
+                                    <li id="length" className="invalid">Be at least <strong>8 characters</strong></li>
+                                    <li id="space" className="invalid">be<strong> use [~,!,@,#,$,%,^,&,*,-,=,.,;,']</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

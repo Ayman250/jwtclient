@@ -4,17 +4,24 @@ import PostForm from'./PostForm.js'
 
 class PostSection extends Component{
     render(){
-        let {activeHash} = this.props;
-        return (
-            <div className="posts-container panel panel-default">
-                <div className="panel-heading"><strong>{activeHash || 'Enter a HashTag'}</strong></div>
-                <div className="'panel-body posts">
-                    <PostList {...this.props}/>
-                    <PostForm {...this.props}/>
+        if(this.props.activeHash !== undefined)
+        {
+            return (
+                <div className="posts-container panel panel-default">
+                    <div className="panel-body container">
+                        <PostList {...this.props}/>
+                        <PostForm {...this.props}/>
+                    </div>
                 </div>
-            </div>
 
-        )
+            )
+        } else {
+            return (
+                <div>
+                    <h2>Enter a Hash</h2>
+                </div>
+            )
+        }
     }
 }
 
