@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 class PostForm extends Component{
     onSubmit(e){
@@ -31,8 +32,8 @@ class PostForm extends Component{
 }
 
 PostForm.PropTypes = {
-    activeHash: React.PropTypes.object.isRequired,
-    addPost: React.PropTypes.func.isRequired
+    activeHash: PropTypes.object.isRequired,
+    addPost: PropTypes.func.isRequired
 };
 
 export default PostForm

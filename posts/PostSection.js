@@ -1,17 +1,16 @@
 import React, {Component} from 'react';
 import PostList from './PostList.js'
 import PostForm from'./PostForm.js'
+import PropTypes from 'prop-types';
 
 class PostSection extends Component{
     render(){
-        if(this.props.activeHash !== undefined)
+        if(this.props.activeHash.length !== 0)
         {
             return (
-                <div className="posts-container panel panel-default">
-                    <div className="panel-body container">
+                <div className="container">
                         <PostList {...this.props}/>
                         <PostForm {...this.props}/>
-                    </div>
                 </div>
 
             )
@@ -26,9 +25,9 @@ class PostSection extends Component{
 }
 
 PostSection.propTypes = {
-    posts: React.PropTypes.array.isRequired,
-    activeHash: React.PropTypes.object.isRequired,
-    addPost: React.PropTypes.func.isRequired
+    posts: PropTypes.array.isRequired,
+    activeHash: PropTypes.string.isRequired,
+    addPost: PropTypes.func.isRequired
 };
 
 export default PostSection

@@ -17,8 +17,46 @@ class App extends Component {
         this.state = {
             isLoggedIn: undefined,
             posts: [],
-            activeHash: undefined
+            activeHash: this.getCookie("activeHash")
         };
+    }
+
+    clearPosts(){
+        this.setState(
+            {posts: []}
+        );
+    }
+
+    //retrieve new posts from server
+    updatePosts(hash){
+        this.clearPosts();
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "http://localhost:3030/getposts?hash=" + hash, true);
+        console.log(this.state.activeHash);
+        xhttp.setRequestHeader("Authorization", "Bearer " + this.getCookie("jwt"));
+        xhttp.send();
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === xhttp.DONE) {
+                if (xhttp.status === 400) {
+                    console.log("User already exists");
+                } else if (xhttp.status === 200) {
+                    this.insertPosts(JSON.parse(xhttp.responseText));
+                }
+            }
+        }
+    }
+
+    //Insert posts clientSide
+    insertPosts(newPosts) {
+        if(newPosts === null) return;
+
+        for (let i = 0; i<newPosts.length; i++) {
+            let newPost = newPosts[i];
+            console.log(newPost);
+            let posts = this.state.posts;
+            posts.push(newPost);
+            this.setState({posts});
+        }
     }
 
     onRegisterSubmit(loginInfo) {
@@ -105,11 +143,11 @@ class App extends Component {
         return "";
     }
 
-    addPost(postBody, hash){
+    addPost(postBody){
         console.log(postBody);
         let {activeHash} = this.state;
         let xhttp = new XMLHttpRequest();
-        let post = {body: postBody, author: "TEST AUTHOR", hash: activeHash};
+        let post = {body: postBody, hash: activeHash};
         xhttp.open("POST", "http://localhost:3030/addpost", true);
         xhttp.setRequestHeader("Authorization", "Bearer " + this.getCookie("jwt"));
         xhttp.send(JSON.stringify(post));
@@ -130,6 +168,7 @@ class App extends Component {
 
     changeHash(newHash){
         this.setState({activeHash: newHash});
+        this.setCookie("activeHash", newHash, 0.5)
     }
 
     test(){
@@ -160,8 +199,8 @@ class App extends Component {
         let RouterLogin =  (<Login isLoggedIn={this.state.isLoggedIn} onLoginSubmit={this.onLoginSubmit.bind(this)}/>);
         let RouterRegister = (<Register onRegisterSubmit={this.onRegisterSubmit.bind(this)}/>);
         return (
-            <div className="App">
-                <div className="App-header">
+            <div>
+                <div className="App-header App">
                     <img src={logo} className="App-logo" alt="logo"/>
                     <h2>Beta</h2>
                 </div>
@@ -169,7 +208,9 @@ class App extends Component {
                         <switch>
                             <Route path="/login" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterLogin)}/>
                             <Route path="/Register" render={() => (this.state.isLoggedIn === true ? <Redirect to={'/'}/> : RouterRegister)}/>
-                            <Route exact={true} path="/" render={() => this.auth(<Chat {...this.state} addPost={this.addPost.bind(this)} changeHash={this.changeHash.bind(this)}/>)}/>
+                            <Route exact={true} path="/" render={() => this.auth(<Chat {...this.state} addPost={this.addPost.bind(this)}
+                                   getCookie={this.getCookie.bind(this)} changeHash={this.changeHash.bind(this)}
+                                   updatePosts={this.updatePosts.bind(this)}/>)}/>
                             <Route path="/test" render={() => this.auth(<button type="button" onClick={this.test.bind(this)}>Test!</button>)}/>
                         </switch>
                     </Router>

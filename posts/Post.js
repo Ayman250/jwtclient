@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import fecha from 'fecha';
+import PropTypes from 'prop-types';
 
 class Posts extends Component{
 
@@ -7,19 +8,19 @@ class Posts extends Component{
         let post = this.props.post;
         let createdAt = fecha.format(new Date(post.createdAt), 'HH:mm:ss MM/DD/YY');
         return(
-            <li>
-                <div className="Author">
+            <li className="list-group-item">
+                <div>
                     <strong>{post.author + " "}</strong>
-                    <i className="timeStamp">{createdAt}</i>
+                    <i>{createdAt}</i>
                 </div>
-                <div className="body">{post.body}</div>
+                    <div>{post.body}</div>
             </li>
         )
     }
 }
 
 Posts.PropTypes = {
-    post: React.PropTypes.object.isRequired
+    post: PropTypes.object.isRequired
 };
 
 export default Posts
